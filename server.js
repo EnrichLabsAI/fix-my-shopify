@@ -4,65 +4,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Trust proxy to get real IP addresses (for rate limiting)
+// Trust proxy to get real IP addresses (helps with accurate IP detection for Django backend)
 app.set('trust proxy', true);
-
-// Rate limiting - 2 requests per IP per 15 minutes
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 2, // Limit each IP to 2 requests per windowMs
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  
-  // Key generator to ensure we're using the correct IP
-  keyGenerator: (req) => {
-    const ip = req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 
-               (req.connection.socket ? req.connection.socket.remoteAddress : null);
-    console.log(`Rate limit check for IP: ${ip}`);
-    return ip;
-  },
-  
-  // Skip successful requests that don't hit our audit endpoint
-  skip: (req) => {
-    const isAuditRequest = req.path === '/api/shopify/audit-public-store' && req.method === 'POST';
-    if (!isAuditRequest) {
-      console.log(`Skipping rate limit for non-audit request: ${req.method} ${req.path}`);
-    }
-    return !isAuditRequest;
-  },
-  
-  // Custom handler for rate limit exceeded
-  handler: (req, res) => {
-    const ip = req.ip;
-    console.log(`Rate limit exceeded for IP: ${ip}`);
-    res.status(429).json({
-      status: 'error',
-      message: 'You\'ve reached the free audit limit (2 per 15 minutes). Install the AI Marketing Agent for unlimited audits and advanced features.',
-      installUrl: 'https://apps.shopify.com/ai-marketing-coordinator',
-      retryAfter: Math.round(req.rateLimit.resetTime / 1000),
-      currentRequests: req.rateLimit.current,
-      limit: req.rateLimit.limit,
-      remaining: req.rateLimit.remaining
-    });
-  }
-});
-
-// Apply rate limiting to all requests
-app.use(limiter);
-
-// Debug middleware to log IP addresses
-app.use((req, res, next) => {
-  if (req.path.includes('/api/shopify/audit-public-store')) {
-    console.log(`Audit request from IP: ${req.ip}, X-Forwarded-For: ${req.get('X-Forwarded-For')}, X-Real-IP: ${req.get('X-Real-IP')}`);
-  }
-  next();
-});
 
 // Security and performance middleware
 app.use(helmet({

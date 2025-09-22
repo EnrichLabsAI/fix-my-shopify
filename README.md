@@ -9,7 +9,7 @@ AI-powered Shopify store audit and optimization tool. Get actionable insights to
 - 📊 **Growth Score**: Track your store's performance with a 0-100 scoring system
 - ✨ **Free Marketing Samples**: Get blog outlines, TikTok hooks, and hero copy suggestions
 - 🚀 **Instant Analysis**: Results in seconds, no account required
-- 🛡️ **Rate Limited**: 2 audits per IP address every 15 minutes to prevent abuse
+- 🛡️ **Rate Limited**: 2 audits per IP address every hour (handled by Django backend)
 
 ## Quick Start
 
@@ -50,14 +50,14 @@ AI-powered Shopify store audit and optimization tool. Get actionable insights to
 
 ## Rate Limiting
 
-The application implements IP-based rate limiting to prevent abuse:
+The application implements IP-based rate limiting via the Django backend to prevent abuse:
 
-- **Limit**: 2 requests per IP address
-- **Window**: 15 minutes
-- **Response**: HTTP 429 with retry-after information
-- **Headers**: Standard `RateLimit-*` headers included
+- **Limit**: 2 requests per IP address per hour
+- **Storage**: Redis-backed rate limiting in Django backend
+- **Response**: HTTP 429 with marketing message encouraging app installation
+- **Bypass**: Localhost and whitelisted IPs exempt (via `SHOPIFY_AUDIT_IP_WHITELIST`)
 
-When the limit is exceeded, users receive a friendly error message with the time until they can try again.
+When the limit is exceeded, users receive a branded message promoting the AI Marketing Agent with installation link.
 
 ## Technology Stack
 

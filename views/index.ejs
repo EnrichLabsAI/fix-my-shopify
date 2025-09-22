@@ -366,13 +366,13 @@
     <div class="container">
       <h1 class="title">What's your store URL?</h1>
       <p class="subtitle">
-        Get a free audit from the <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank">AI Marketing Agent</a> that's helped 1000+ Shopify stores boost sales
+        Get a free audit from the <a href="https://apps.shopify.com/ai-marketing-agent" target="_blank">AI Marketing Agent</a> that's helped 1000+ Shopify stores boost sales
       </p>
       
       <form id="auditForm">
         <div class="input-container">
           <input 
-            type="url" 
+            type="text" 
             id="storeUrl" 
             class="input" 
             placeholder="Enter your Shopify store URL..." 
@@ -399,10 +399,16 @@
       document.getElementById('auditForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const storeUrl = document.getElementById('storeUrl').value;
+        let storeUrl = document.getElementById('storeUrl').value.trim();
         const submitBtn = document.getElementById('submitBtn');
         const loading = document.getElementById('loading');
         const results = document.getElementById('results');
+        
+        // Basic validation
+        if (!storeUrl) {
+          displayError('Please enter a store URL or domain name');
+          return;
+        }
         
         // Show loading
         submitBtn.disabled = true;
@@ -493,7 +499,7 @@
                  <div style="background: #333; border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid #d97706;">
                    <div style="font-weight: 500; margin-bottom: 4px; font-size: 14px;">${issue.type}</div>
                    <div style="color: #10b981; font-size: 13px; margin-bottom: 8px;">${issue.suggested_fix}</div>
-                   <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" 
+                   <a href="https://apps.shopify.com/ai-marketing-agent" target="_blank" 
                       style="background: #d97706; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block;">
                      🤖 Fix with AI Agent
                    </a>
@@ -532,7 +538,7 @@
                    <div style="display: inline-block; background: #d97706; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">${audit.sections.conversion.hero_suggestion.cta}</div>
                  </div>
                  <div style="margin-top: 12px; text-align: center;">
-                   <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" 
+                   <a href="https://apps.shopify.com/ai-marketing-agent" target="_blank" 
                       style="background: #dbeafe; color: #1e3a8a; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block;">
                      ✨ Apply This Copy with AI Agent
                    </a>
@@ -551,7 +557,7 @@
                      <div style="font-size: 12px; color: #bfdbfe; opacity: 0.8; margin-bottom: 8px;">
                        ${audit.free_samples.blog_outline.h2s.slice(0, 3).join(' • ')}
                      </div>
-                     <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" 
+                     <a href="https://apps.shopify.com/ai-marketing-agent" target="_blank" 
                         style="background: #d97706; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block;">
                        📝 Write Full Post with AI Agent
                      </a>
@@ -564,7 +570,7 @@
                     ${audit.free_samples.tiktok_hooks.slice(0, 2).map(hook => `
                       <div style="font-size: 13px; color: #dbeafe; margin-bottom: 4px; font-style: italic;">"${hook}"</div>
                     `).join('')}
-                    <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" 
+                    <a href="https://apps.shopify.com/ai-marketing-agent" target="_blank" 
                        style="background: #d97706; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; margin-top: 8px;">
                       🎬 Create Full Scripts with AI Agent
                     </a>
@@ -594,11 +600,11 @@
                 Get the AI Marketing Agent that automatically handles ads, SEO, email marketing, and performance tracking for your Shopify store.
               </div>
               <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" style="background: white; color: #d97706; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                <a href="https://apps.shopify.com/ai-marketing-agent" target="_blank" style="background: white; color: #d97706; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
                   <span>🚀 Install AI Marketing Agent</span>
                   <span style="font-size: 12px;">→</span>
                 </a>
-                <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                <a href="https://apps.shopify.com/ai-marketing-agent" target="_blank" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
                   <span>🤖 Get AI Marketing Help</span>
                 </a>
                 <div style="color: rgba(255,255,255,0.8); font-size: 12px;">
@@ -639,7 +645,7 @@
       function displayRateLimitModal(data) {
         const results = document.getElementById('results');
         const now = new Date().toLocaleTimeString();
-        const retryMinutes = data.retryAfter ? Math.round((data.retryAfter * 1000 - Date.now()) / 60000) : 15;
+        const retryMinutes = data.retryAfter ? Math.round(data.retryAfter / 60) : 60;
         
         results.innerHTML = `
           <div class="message">
@@ -655,11 +661,11 @@
               <div style="font-size: 48px; margin-bottom: 16px;">🚀</div>
               <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Upgrade to Unlimited Audits</h3>
               <p style="font-size: 14px; margin-bottom: 16px; opacity: 0.9; line-height: 1.5;">
-                You've used your 2 free audits. Get unlimited store audits, advanced AI insights, 
+                 You've used your 2 free audits. Get unlimited store audits, advanced AI insights,
                 automated marketing campaigns, and performance tracking with the AI Marketing Agent.
               </p>
               <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
-                <a href="${data.installUrl || 'https://apps.shopify.com/ai-marketing-coordinator'}" 
+                <a href="${data.installUrl || 'https://apps.shopify.com/ai-marketing-agent'}" 
                    target="_blank" 
                    style="background: white; color: #d97706; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
                   <span>Install Free App</span>
@@ -673,7 +679,7 @@
 
             <div style="background: #333; border-radius: 8px; padding: 16px; font-size: 14px; color: #a0a0a0;">
               <div style="margin-bottom: 8px;">
-                <strong style="color: #f5f5f5;">Free Option:</strong> Wait ${retryMinutes} minutes for your rate limit to reset
+                 <strong style="color: #f5f5f5;">Free Option:</strong> Wait ${retryMinutes > 60 ? Math.round(retryMinutes/60) + ' hours' : retryMinutes + ' minutes'} for your rate limit to reset
               </div>
               <div>
                 <strong style="color: #f5f5f5;">Rate Limit:</strong> ${data.currentRequests || 2}/${data.limit || 2} free audits used

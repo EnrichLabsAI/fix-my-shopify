@@ -21,7 +21,7 @@ router.post('/shopify/audit-public-store', async (req, res) => {
     }
 
     // Django mounts app URLs under /ai_coordinator/
-    const resp = await fetchFn(`${djangoBase}/ai_coordinator/shopify/audit-public-store/`, {
+    const resp = await fetchFn(`${djangoBase}/ai_coordinator/experiments/audit-public-store/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
