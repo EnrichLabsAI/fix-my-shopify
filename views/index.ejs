@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title %></title>
+    <meta name="description" content="<%= description %>">
+    <meta name="keywords" content="shopify audit, seo audit, conversion optimization, ai marketing, shopify tools">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="<%= description %>">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= title %>">
+    <meta name="twitter:description" content="<%= description %>">
+    
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        background: #2f2f2f;
+        color: #f5f5f5;
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 680px;
+        width: 100%;
+      }
+
+      .title {
+        font-size: 32px;
+        font-weight: 300;
+        color: #f5f5f5;
+        text-align: center;
+        margin-bottom: 40px;
+        letter-spacing: -0.5px;
+      }
+
+      .title::before {
+        content: "🛍️ ";
+        margin-right: 8px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+        color: #a0a0a0;
+        margin-top: 8px;
+        margin-bottom: 24px;
+        font-weight: 400;
+        text-align: center;
+        line-height: 1.6;
+      }
+
+      .subtitle a {
+        color: #d97706;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .subtitle a:hover {
+        text-decoration: underline;
+      }
+
+      .input-container {
+        background: #3a3a3a;
+        border-radius: 12px;
+        padding: 4px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .input {
+        flex: 1;
+        background: none;
+        border: none;
+        color: #f5f5f5;
+        font-size: 16px;
+        padding: 16px 20px;
+        outline: none;
+        font-family: inherit;
+      }
+
+      .input::placeholder {
+        color: #999;
+      }
+
+      .submit-btn {
+        background: #d97706;
+        border: none;
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: white;
+        font-size: 16px;
+        transition: background 0.2s;
+        margin-right: 4px;
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        background: #b45309;
+      }
+
+      .submit-btn:disabled {
+        background: #666;
+        cursor: not-allowed;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        color: #999;
+        font-size: 14px;
+        padding: 20px;
+      }
+
+      .loading.show {
+        display: block;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #666;
+        border-top: 2px solid #d97706;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .results {
+        display: none;
+        margin-top: 32px;
+      }
+
+      .results.show {
+        display: block;
+      }
+
+      .message {
+        background: #3a3a3a;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+
+      .message-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .avatar {
+        width: 28px;
+        height: 28px;
+        background: #d97706;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .message-info h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .message-info span {
+        font-size: 12px;
+        color: #999;
+      }
+
+      .growth-score {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 24px;
+      }
+
+      .score-excellent { background: #065f46; color: #d1fae5; }
+      .score-good { background: #1e40af; color: #dbeafe; }
+      .score-fair { background: #92400e; color: #fef3c7; }
+      .score-poor { background: #991b1b; color: #fee2e2; }
+
+      .sections {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .section {
+        background: #2a2a2a;
+        border-radius: 8px;
+        padding: 16px;
+        border: 1px solid #444;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .section-title {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .section-score {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 12px;
+        background: #444;
+      }
+
+      .issue {
+        background: #333;
+        border-radius: 6px;
+        padding: 12px;
+        margin-bottom: 8px;
+        font-size: 13px;
+      }
+
+      .issue:last-child {
+        margin-bottom: 0;
+      }
+
+      .issue-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .issue-evidence {
+        color: #999;
+        margin-bottom: 4px;
+      }
+
+      .issue-fix {
+        color: #10b981;
+      }
+
+      .samples {
+        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 16px;
+      }
+
+      .samples-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #dbeafe;
+      }
+
+      .samples-title::before {
+        content: "🎁 ";
+        margin-right: 8px;
+      }
+
+      .sample {
+        background: rgba(255,255,255,0.1);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        backdrop-filter: blur(10px);
+      }
+
+      .sample:last-child {
+        margin-bottom: 0;
+      }
+
+      .sample-title {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 8px;
+        color: #dbeafe;
+      }
+
+      .summary {
+        background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 16px;
+      }
+
+      .summary-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #d1fae5;
+      }
+
+      .summary-title::before {
+        content: "📊 ";
+        margin-right: 8px;
+      }
+
+      .error {
+        background: #991b1b;
+        color: #fee2e2;
+        padding: 16px;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+
+      @media (max-width: 640px) {
+        .title {
+          font-size: 28px;
+        }
+        
+        .sections {
+          grid-template-columns: 1fr;
+        }
+        
+        .input-container {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        
+        .submit-btn {
+          width: 100%;
+          height: 44px;
+          margin: 8px 0 0 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">What's your store URL?</h1>
+      <p class="subtitle">
+        Get a free audit from the <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank">AI Marketing Agent</a> that's helped 1000+ Shopify stores boost sales
+      </p>
+      
+      <form id="auditForm">
+        <div class="input-container">
+          <input 
+            type="url" 
+            id="storeUrl" 
+            class="input" 
+            placeholder="Enter your Shopify store URL..." 
+            required
+          >
+          <button type="submit" id="submitBtn" class="submit-btn">↑</button>
+        </div>
+      </form>
+
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        Analyzing your store...
+        <p style="font-size: 14px; color: #a0a0a0; margin-top: 12px; text-align: center;">
+          Checking SEO, conversion rates, ad readiness & more with AI
+        </p>
+      </div>
+
+      <div id="results" class="results">
+        <!-- Results will be inserted here -->
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('auditForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const storeUrl = document.getElementById('storeUrl').value;
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        
+        // Show loading
+        submitBtn.disabled = true;
+        loading.classList.add('show');
+        results.classList.remove('show');
+        
+        try {
+          const response = await fetch('/api/shopify/audit-public-store', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ store_url: storeUrl })
+          });
+          
+          const data = await response.json();
+          
+          // Log rate limit headers for debugging
+          console.log('Rate limit headers:', {
+            limit: response.headers.get('RateLimit-Limit'),
+            remaining: response.headers.get('RateLimit-Remaining'),
+            reset: response.headers.get('RateLimit-Reset')
+          });
+          
+          if (data.status === 'success') {
+            displayResults(data.data);
+          } else {
+            // Handle rate limiting specifically
+            if (response.status === 429) {
+              displayRateLimitModal(data);
+            } else {
+              displayError(data.message || 'An error occurred');
+            }
+          }
+        } catch (error) {
+          console.error('Request failed:', error);
+          displayError('Network error: ' + error.message);
+        } finally {
+          submitBtn.disabled = false;
+          loading.classList.remove('show');
+        }
+      });
+      
+      function getScoreClass(score) {
+        if (score >= 80) return 'score-excellent';
+        if (score >= 60) return 'score-good';
+        if (score >= 40) return 'score-fair';
+        return 'score-poor';
+      }
+      
+      function displayResults(audit) {
+        const results = document.getElementById('results');
+        const now = new Date().toLocaleTimeString();
+        
+        // Filter out technical jargon and empty issues
+        const cleanIssues = (issues) => {
+          return issues.filter(issue => {
+            // Skip technical empty descriptions
+            if (issue.evidence && issue.evidence.includes('(empty)')) return false;
+            if (issue.evidence && issue.evidence.includes('META_DESC')) return false;
+            return true;
+          }).map(issue => ({
+            ...issue,
+            type: issue.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            evidence: issue.evidence.replace(/META_DESC: \(empty\)/g, 'Missing meta description'),
+            suggested_fix: issue.suggested_fix.replace(/Add a unique, keyword-rich meta description \(150-160 characters\) that accurately summarizes the collection and encourages clicks\./g, 'Add a compelling meta description to improve click-through rates')
+          }));
+        };
+
+        const seoIssues = cleanIssues(audit.sections.seo.issues);
+        
+        let html = `
+          <div class="message">
+            <div class="message-header">
+              <div class="avatar">AI</div>
+              <div class="message-info">
+                <h4>AI Marketing Agent</h4>
+                <span>Today at ${now}</span>
+              </div>
+            </div>
+            
+            <h3 style="font-size: 18px; margin-bottom: 16px; font-weight: 400;">Here's your store audit</h3>
+            <div class="growth-score ${getScoreClass(audit.growth_score)}">
+              📈 Growth Score: ${audit.growth_score}/100
+            </div>
+            
+            <div style="margin-bottom: 24px;">
+              <h4 style="font-size: 16px; margin-bottom: 12px; font-weight: 500;">Key Issues Found</h4>
+              ${seoIssues.length > 0 ? seoIssues.slice(0, 3).map(issue => `
+                 <div style="background: #333; border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid #d97706;">
+                   <div style="font-weight: 500; margin-bottom: 4px; font-size: 14px;">${issue.type}</div>
+                   <div style="color: #10b981; font-size: 13px; margin-bottom: 8px;">${issue.suggested_fix}</div>
+                   <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" 
+                      style="background: #d97706; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block;">
+                     🤖 Fix with AI Agent
+                   </a>
+                 </div>
+              `).join('') : '<div style="color: #10b981; font-size: 14px;">✅ No major issues found!</div>'}
+            </div>
+
+            <div style="margin-bottom: 24px;">
+              <h4 style="font-size: 16px; margin-bottom: 12px; font-weight: 500;">Quick Wins</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+                <div style="background: #333; border-radius: 8px; padding: 12px; text-align: center;">
+                  <div style="font-size: 12px; color: #999; margin-bottom: 4px;">SEO</div>
+                  <div style="font-size: 18px; font-weight: 600;">${audit.sections.seo.score}/100</div>
+                </div>
+                <div style="background: #333; border-radius: 8px; padding: 12px; text-align: center;">
+                  <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Conversion</div>
+                  <div style="font-size: 18px; font-weight: 600;">${audit.sections.conversion.score}/100</div>
+                </div>
+                <div style="background: #333; border-radius: 8px; padding: 12px; text-align: center;">
+                  <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Ads Ready</div>
+                  <div style="font-size: 18px; font-weight: 600;">${audit.sections.ads.score}/100</div>
+                </div>
+                <div style="background: #333; border-radius: 8px; padding: 12px; text-align: center;">
+                  <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Social Proof</div>
+                  <div style="font-size: 18px; font-weight: 600;">${audit.sections.social_proof.score}/100</div>
+                </div>
+              </div>
+            </div>
+
+            ${audit.sections.conversion.hero_suggestion ? `
+              <div style="background: #1e3a8a; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                <h4 style="color: #dbeafe; font-size: 14px; margin-bottom: 12px; font-weight: 500;">💡 Suggested Hero Copy</h4>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; backdrop-filter: blur(10px);">
+                  <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #dbeafe;">${audit.sections.conversion.hero_suggestion.headline}</div>
+                  <div style="font-size: 14px; color: #bfdbfe; margin-bottom: 8px;">${audit.sections.conversion.hero_suggestion.subhead}</div>
+                   <div style="display: inline-block; background: #d97706; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">${audit.sections.conversion.hero_suggestion.cta}</div>
+                 </div>
+                 <div style="margin-top: 12px; text-align: center;">
+                   <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" 
+                      style="background: #dbeafe; color: #1e3a8a; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block;">
+                     ✨ Apply This Copy with AI Agent
+                   </a>
+                 </div>
+               </div>
+            ` : ''}
+            
+            ${audit.free_samples ? `
+              <div class="samples">
+                <div class="samples-title">Free Marketing Samples</div>
+                
+                ${audit.free_samples.blog_outline ? `
+                  <div class="sample">
+                     <div class="sample-title">📝 Blog Post Idea</div>
+                     <div style="font-weight: 500; margin-bottom: 6px; color: #dbeafe;">${audit.free_samples.blog_outline.title}</div>
+                     <div style="font-size: 12px; color: #bfdbfe; opacity: 0.8; margin-bottom: 8px;">
+                       ${audit.free_samples.blog_outline.h2s.slice(0, 3).join(' • ')}
+                     </div>
+                     <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" 
+                        style="background: #d97706; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block;">
+                       📝 Write Full Post with AI Agent
+                     </a>
+                   </div>
+                ` : ''}
+                
+                ${audit.free_samples.tiktok_hooks && audit.free_samples.tiktok_hooks.length > 0 ? `
+                  <div class="sample">
+                    <div class="sample-title">🎬 TikTok Video Ideas</div>
+                    ${audit.free_samples.tiktok_hooks.slice(0, 2).map(hook => `
+                      <div style="font-size: 13px; color: #dbeafe; margin-bottom: 4px; font-style: italic;">"${hook}"</div>
+                    `).join('')}
+                    <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" 
+                       style="background: #d97706; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; margin-top: 8px;">
+                      🎬 Create Full Scripts with AI Agent
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+            
+            <div class="summary">
+              <div class="summary-title">Next Steps</div>
+              <div style="color: #d1fae5; font-size: 14px; line-height: 1.6;">
+                ${audit.summary}
+                ${audit.cta_deeplinks && audit.cta_deeplinks.apply_fixes ? `
+                  <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-weight: 500; margin-bottom: 6px;">Priority Actions:</div>
+                    ${audit.cta_deeplinks.apply_fixes.slice(0, 3).map(fix => `
+                      <div style="margin-bottom: 3px; font-size: 13px;">• ${fix.action}</div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #d97706, #f59e0b); border-radius: 12px; padding: 20px; margin-top: 24px; text-align: center;">
+              <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px; color: white;">🚀 Ready to implement these fixes?</div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.9); margin-bottom: 16px; line-height: 1.5;">
+                Get the AI Marketing Agent that automatically handles ads, SEO, email marketing, and performance tracking for your Shopify store.
+              </div>
+              <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" style="background: white; color: #d97706; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                  <span>🚀 Install AI Marketing Agent</span>
+                  <span style="font-size: 12px;">→</span>
+                </a>
+                <a href="https://apps.shopify.com/ai-marketing-coordinator" target="_blank" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                  <span>🤖 Get AI Marketing Help</span>
+                </a>
+                <div style="color: rgba(255,255,255,0.8); font-size: 12px;">
+                  ⭐ 5.0 rating • 7-day free trial
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        results.innerHTML = html;
+        results.classList.add('show');
+        results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      
+      function displayError(message) {
+        const results = document.getElementById('results');
+        const now = new Date().toLocaleTimeString();
+        
+        results.innerHTML = `
+          <div class="message">
+            <div class="message-header">
+              <div class="avatar" style="background: #991b1b;">⚠️</div>
+              <div class="message-info">
+                <h4>System</h4>
+                <span>Today at ${now}</span>
+              </div>
+            </div>
+            <div class="error">
+              <strong>Error:</strong> ${message}
+            </div>
+          </div>
+        `;
+        results.classList.add('show');
+        results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function displayRateLimitModal(data) {
+        const results = document.getElementById('results');
+        const now = new Date().toLocaleTimeString();
+        const retryMinutes = data.retryAfter ? Math.round((data.retryAfter * 1000 - Date.now()) / 60000) : 15;
+        
+        results.innerHTML = `
+          <div class="message">
+            <div class="message-header">
+              <div class="avatar" style="background: #d97706;">🛡️</div>
+              <div class="message-info">
+                <h4>Rate Limit Reached</h4>
+                <span>Today at ${now}</span>
+              </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #d97706, #f59e0b); border-radius: 12px; padding: 24px; margin-bottom: 20px; text-align: center; color: white;">
+              <div style="font-size: 48px; margin-bottom: 16px;">🚀</div>
+              <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Upgrade to Unlimited Audits</h3>
+              <p style="font-size: 14px; margin-bottom: 16px; opacity: 0.9; line-height: 1.5;">
+                You've used your 2 free audits. Get unlimited store audits, advanced AI insights, 
+                automated marketing campaigns, and performance tracking with the AI Marketing Agent.
+              </p>
+              <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+                <a href="${data.installUrl || 'https://apps.shopify.com/ai-marketing-coordinator'}" 
+                   target="_blank" 
+                   style="background: white; color: #d97706; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                  <span>Install Free App</span>
+                  <span style="font-size: 12px;">→</span>
+                </a>
+              </div>
+              <div style="font-size: 12px; opacity: 0.8;">
+                ⭐ 5.0 rating • Free plan available • 7-day free trial
+              </div>
+            </div>
+
+            <div style="background: #333; border-radius: 8px; padding: 16px; font-size: 14px; color: #a0a0a0;">
+              <div style="margin-bottom: 8px;">
+                <strong style="color: #f5f5f5;">Free Option:</strong> Wait ${retryMinutes} minutes for your rate limit to reset
+              </div>
+              <div>
+                <strong style="color: #f5f5f5;">Rate Limit:</strong> ${data.currentRequests || 2}/${data.limit || 2} free audits used
+              </div>
+            </div>
+          </div>
+        `;
+        results.classList.add('show');
+        results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    </script>
+  </body>
+</html>
