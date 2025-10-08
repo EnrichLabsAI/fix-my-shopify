@@ -52,7 +52,7 @@ AI-powered Shopify store audit and optimization tool. Get actionable insights to
 
 The application implements IP-based rate limiting via the Django backend to prevent abuse:
 
-- **Limit**: 2 requests per IP address per hour
+- **Limit**: Configurable requests per IP address per hour (currently 2)
 - **Storage**: Redis-backed rate limiting in Django backend
 - **Response**: HTTP 429 with marketing message encouraging app installation
 - **Bypass**: Localhost and whitelisted IPs exempt (via `SHOPIFY_AUDIT_IP_WHITELIST`)

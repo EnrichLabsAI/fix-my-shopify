@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title %></title>
+    <meta name="description" content="<%= description %>">
+
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { background:#2f2f2f; color:#f5f5f5; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; line-height:1.5; min-height:100vh; padding:20px; display:flex; align-items:center; justify-content:center; }
+      .container { max-width: 680px; width: 100%; }
+      .title { font-size:32px; font-weight:300; text-align:center; margin-bottom:8px; letter-spacing:-.5px; }
+      .title::before { content:"🖼️ "; margin-right:8px; }
+      .subtitle { font-size:16px; color:#a0a0a0; margin-bottom:24px; font-weight:400; text-align:center; line-height:1.6; }
+
+      label { font-size:14px; font-weight:500; margin-bottom:6px; display:block; color:#f5f5f5; }
+      .field { margin-bottom:16px; }
+      input[type="text"], textarea { width:100%; background:#3a3a3a; border:1px solid #444; border-radius:12px; padding:14px 16px; color:#f5f5f5; font-size:15px; }
+      textarea { resize: vertical; min-height: 96px; }
+      input::placeholder, textarea::placeholder {
+        color:#999;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      input[type="file"] { display:block; }
+      input[type="file"]::file-selector-button { background:#d97706; border:none; border-radius:6px; padding:6px 12px; font-weight:600; color:white; margin-right:12px; cursor:pointer; }
+      input[type="number"] { width:100px; background:#3a3a3a; border:1px solid #444; border-radius:12px; padding:10px 12px; color:#f5f5f5; text-align:center; }
+
+      .controls { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin:8px 0 8px; }
+      .checkbox-label { display:inline-flex; align-items:center; font-size:14px; margin-right:16px; color:#f5f5f5; }
+      .checkbox-label input { margin-right:6px; width:auto; }
+
+      .primary-btn { background:#d97706; color:white; border:none; border-radius:10px; padding:14px 20px; font-weight:600; font-size:15px; width:100%; cursor:pointer; transition:background .2s; }
+      .primary-btn:hover { background:#b45309; }
+      .hint { font-size:12px; color:#999; margin-top:8px; margin-bottom:12px; font-family: inherit; font-weight: 400; }
+
+      .loading { display:none; text-align:center; color:#999; font-size:14px; padding:20px; }
+      .loading.show { display:block; }
+      .spinner { display:inline-block; width:16px; height:16px; border:2px solid #666; border-top:2px solid #d97706; border-radius:50%; animation:spin 1s linear infinite; margin-right:8px; }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+      .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:24px; }
+      .grid img { width:100%; border-radius:12px; object-fit:cover; }
+      #error { display:none; background:#991b1b; color:#fee2e2; padding:12px; border-radius:8px; font-weight:500; margin-top:16px; }
+
+      @media (max-width: 640px) { .title { font-size:28px; } }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">AI Ad Image Generator</h1>
+      <p class="subtitle">Generate scroll-stopping creatives for your ads in one click.</p>
+
+      <form id="gen-form">
+        <div class="field">
+          <label>Product Title</label>
+          <input type="text" name="productTitle" required placeholder="Product name...">
+          <div class="hint">Use a short, specific product name.</div>
+        </div>
+
+        <div class="field">
+          <label>Product Description</label>
+          <textarea name="productDesc" required placeholder="Brief description..."></textarea>
+          <div class="hint">Describe key benefits in 1–2 sentences.</div>
+        </div>
+
+        <div class="field">
+          <label>Upload Reference Image (optional)</label>
+          <input type="file" accept="image/*" name="image">
+          <div class="hint">PNG or JPG recommended. Max a few MB.</div>
+        </div>
+
+        <div class="controls">
+          <div>
+            <label class="checkbox-label"><input type="checkbox" name="includeCopy">Include copy text</label>
+          </div>
+        </div>
+
+        <button type="submit" class="primary-btn" id="generate-btn">Generate Ad</button>
+      </form>
+
+      <div id="loading" class="loading"><span class="spinner"></span>Generating your ad...</div>
+      <div id="error"></div>
+      <div id="results" class="grid"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById('gen-form');
+      const loading = document.getElementById('loading');
+      const results = document.getElementById('results');
+      const errorBox = document.getElementById('error');
+      const generateBtn = document.getElementById('generate-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorBox.style.display = 'none';
+        results.innerHTML = '';
+        loading.classList.add('show');
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Generating...';
+
+        const fd = new FormData(form);
+        // Force server expectations: always 1 ad, and ensure no logo is requested
+        fd.set('numAds', '1');
+        fd.delete('includeLogo');
+        try {
+          const djangoBase = '<%= djangoUrl %>';
+          const endpoint = `${djangoBase}/ai_coordinator/experiments/generate-ad-image/`;
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'X-API-KEY': '<%= apiKey %>' },
+            body: fd,
+          });
+          const status = res.status;
+          let json = {};
+          try { json = await res.json(); } catch (_) { json = {}; }
+
+          if (status === 429) {
+            const retryAfter = parseInt(res.headers.get('RateLimit-Reset') || '0', 10);
+            const retryMinutes = retryAfter ? Math.max(1, Math.round(retryAfter / 60)) : 60;
+            const installUrl = (json && json.installUrl) || 'https://apps.shopify.com/ai-marketing-agent';
+            errorBox.innerHTML = `
+              <div style="background: linear-gradient(135deg, #d97706, #f59e0b); border-radius: 12px; padding: 16px; color: white;">
+                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Rate limit reached</div>
+                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 12px;">You've used your free ad generations. Get unlimited generations and advanced AI features with the AI Marketing Agent.</div>
+                <div style="display:flex; gap: 8px; align-items:center; flex-wrap: wrap;">
+                  <a href="${installUrl}" target="_blank" style="background: white; color: #d97706; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                    <span>🚀 Install AI Marketing Agent</span>
+                    <span style="font-size: 12px;">→</span>
+                  </a>
+                  <span style="font-size: 12px; opacity: 0.85;">Or wait ${retryMinutes > 60 ? Math.round(retryMinutes/60) + ' hours' : retryMinutes + ' minutes'}</span>
+                </div>
+              </div>`;
+            errorBox.style.display = 'block';
+            return;
+          }
+
+          if (!res.ok || (json && json.error)) throw new Error((json && json.error) || `HTTP ${status}`);
+          if (json.image_urls && json.image_urls.length) {
+            json.image_urls.forEach((url) => {
+              const img = document.createElement('img');
+              img.src = url;
+              results.appendChild(img);
+            });
+          } else {
+            throw new Error('No images returned');
+          }
+        } catch (err) {
+          errorBox.textContent = err.message;
+          errorBox.style.display = 'block';
+        } finally {
+          loading.classList.remove('show');
+          generateBtn.disabled = false;
+          generateBtn.textContent = 'Generate Ad';
+        }
+      });
+    </script>
+  </body>
+</html>
